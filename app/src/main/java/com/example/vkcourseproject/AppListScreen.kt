@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AppListScreen(
     apps: List<AppItem>,
+    onAppClick: (AppItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
         LazyColumn(
@@ -22,7 +23,8 @@ fun AppListScreen(
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             items(apps, key = { it.id }) { app ->
-                AppListItem(app = app)
+                AppListItem(app = app,
+                    onClick = {onAppClick(app)})
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
