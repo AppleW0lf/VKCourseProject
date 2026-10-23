@@ -32,30 +32,21 @@ class MainActivity : ComponentActivity() {
 
         NavHost(navController = navController, startDestination = "list") {
             composable("list") {
-                Scaffold(
-                    topBar = { AppListToolbar() }
-                ) { innerPadding ->
+
                     AppListScreen(
-                        apps = sampleApps,
                         onAppClick = { app ->
                             navController.navigate("details/${app.id}")
-                        },
-                        modifier = Modifier.padding(innerPadding)
+                        }
                     )
-                }
             }
 
             composable("details/{appId}") { backStackEntry ->
-                val appId = backStackEntry.arguments?.getString("appId")?.toIntOrNull()
-                val app = sampleApps.find { it.id == appId } ?: sampleApps.first()
-
+                val appId = backStackEntry.arguments?.getString("appId")?.toIntOrNull() ?: 0
                 AppDetailsScreen(
-                    app = app,
+                    appId = appId,
                     onBackClick = { navController.popBackStack() },
                     onShowcaseAppClick = { clickedApp ->
-                        navController.navigate("details/${clickedApp.id}") {
-                            popUpTo("details/{appId}") { inclusive = true }
-                        }
+                        navController.navigate("details/${clickedApp.id}")
                     }
                 )
             }

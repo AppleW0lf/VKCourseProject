@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListToolbar(
+    onMenuClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -29,7 +30,7 @@ fun AppListToolbar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = {  }) {
+            IconButton(onClick = onMenuClick ) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.toolbar_menu)

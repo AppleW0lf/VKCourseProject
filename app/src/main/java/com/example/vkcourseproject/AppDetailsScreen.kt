@@ -43,11 +43,12 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDetailsScreen(
-    app: AppItem,
+    appId: Int,
     onBackClick: () -> Unit,
     onShowcaseAppClick: (AppItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val app = sampleApps.find { it.id == appId } ?: sampleApps.first()
     Scaffold(
         topBar = {
             TopAppBar(
