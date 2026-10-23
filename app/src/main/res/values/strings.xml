@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">VKCourseProject</string>
+    <string name="toolbar_menu">Меню</string>
+    <string name="showcase_text">Витрина</string>
+    <string name="app_detail_age">Возраст</string>
+    <string name="app_detail_size">Размер</string>
+    <string name="app_detail_install">Установить</string>
+    <string name="app_detail_screenshots">Скриншоты</string>
+    <string name="app_detail_description">Описание приложения</string>
 </resources>

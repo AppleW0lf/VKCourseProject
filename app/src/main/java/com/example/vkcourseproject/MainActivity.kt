@@ -11,6 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.vkcourseproject.ui.theme.VKCourseProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +22,36 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VKCourseProjectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                AppNavigation()
+            }
+        }
+    }
+    @Composable
+    fun AppNavigation() {
+        val navController = rememberNavController()
+
+        NavHost(navController = navController, startDestination = "list") {
+            composable("list") {
+
+                    AppListScreen(
+                        onAppClick = { app ->
+                            navController.navigate("details/${app.id}")
+                        }
                     )
-                }
+            }
+
+            composable("details/{appId}") { backStackEntry ->
+                val appId = backStackEntry.arguments?.getString("appId")?.toIntOrNull() ?: 0
+                AppDetailsScreen(
+                    appId = appId,
+                    onBackClick = { navController.popBackStack() },
+                    onShowcaseAppClick = { clickedApp ->
+                        navController.navigate("details/${clickedApp.id}")
+                    }
+                )
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    VKCourseProjectTheme {
-        Greeting("Android")
-    }
-}
