@@ -1,4 +1,4 @@
-package com.example.vkcourseproject
+package com.example.vkcourseproject.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +43,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.vkcourseproject.R
+import com.example.vkcourseproject.data.AppRepositoryImpl
+import com.example.vkcourseproject.domain.AppItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,11 +55,24 @@ fun AppDetailsScreen(
     onShowcaseAppClick: (AppItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val app = sampleApps.find { it.id == appId } ?: sampleApps.first()
+    val repository = remember { AppRepositoryImpl() }
+    val app by produceState<AppItem?>(initialValue = null, appId) {
+        val apps = repository.getApps()
+        value = apps.find { it.id == appId } ?: apps.firstOrNull()
+    }
+    if (app == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+    val showcaseApps by produceState<List<AppItem>>(initialValue = emptyList()) {
+        value = repository.getShowcaseApps()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(app.name) },
+                title = { Text(app!!.name) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
@@ -81,20 +101,20 @@ fun AppDetailsScreen(
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = app.icon, fontSize = 40.sp)
+                    Text(text = app!!.icon, fontSize = 40.sp)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
-                    Text(app.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    Text(app.developer, style = MaterialTheme.typography.bodyMedium)
+                    Text(app!!.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Text(app!!.developer, style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(app.ageRestriction, fontWeight = FontWeight.Bold)
+                            Text(app!!.ageRestriction, fontWeight = FontWeight.Bold)
                             Text(stringResource(R.string.app_detail_age), style = MaterialTheme.typography.labelSmall)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(app.size, fontWeight = FontWeight.Bold)
+                            Text(app!!.size, fontWeight = FontWeight.Bold)
                             Text(stringResource(R.string.app_detail_size), style = MaterialTheme.typography.labelSmall)
                         }
                     }
@@ -145,13 +165,13 @@ fun AppDetailsScreen(
 
 
             Text(stringResource(R.string.app_detail_description), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
-            Text(app.fullDescription, modifier = Modifier.padding(horizontal = 16.dp))
+            Text(app!!.fullDescription, modifier = Modifier.padding(horizontal = 16.dp))
 
             HorizontalDivider(modifier = Modifier.padding(16.dp))
 
 
             ShowcaseSection(
-                apps = showcaseApps.filter { it.id != app.id },
+                apps = showcaseApps.filter { it.id != app!!.id },
                 onAppClick = onShowcaseAppClick
             )
 

@@ -1,4 +1,4 @@
-package com.example.vkcourseproject
+package com.example.vkcourseproject.domain
 
 data class AppItem(
     val id: Int,
