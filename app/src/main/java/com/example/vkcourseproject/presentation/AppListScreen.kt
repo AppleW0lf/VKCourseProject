@@ -19,14 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vkcourseproject.domain.AppItem
 
 @Composable
 fun AppListScreen(
     onAppClick: (AppItem) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AppListViewModel = viewModel()
+    viewModel: AppListViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }

@@ -2,8 +2,9 @@ package com.example.vkcourseproject.data
 
 import com.example.vkcourseproject.domain.AppItem
 import com.example.vkcourseproject.domain.AppRepository
+import javax.inject.Inject
 
-class AppRepositoryImpl : AppRepository {
+class AppRepositoryImpl @Inject constructor() : AppRepository {
     override suspend fun getApps(): List<AppItem> {
         return mockDatabase.map { it.toDomain() }
     }

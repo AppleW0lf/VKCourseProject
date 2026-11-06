@@ -33,8 +33,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,8 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vkcourseproject.R
-import com.example.vkcourseproject.data.AppRepositoryImpl
 import com.example.vkcourseproject.domain.AppItem
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.LaunchedEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,21 +53,19 @@ fun AppDetailsScreen(
     appId: Int,
     onBackClick: () -> Unit,
     onShowcaseAppClick: (AppItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AppDetailsViewModel = hiltViewModel()
 ) {
-    val repository = remember { AppRepositoryImpl() }
-    val app by produceState<AppItem?>(initialValue = null, appId) {
-        val apps = repository.getApps()
-        value = apps.find { it.id == appId } ?: apps.firstOrNull()
+    val app by viewModel.app.collectAsStateWithLifecycle()
+    val showcaseApps by viewModel.showcaseApps.collectAsStateWithLifecycle()
+    LaunchedEffect(appId) {
+        viewModel.loadData(appId)
     }
     if (app == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
         return
-    }
-    val showcaseApps by produceState<List<AppItem>>(initialValue = emptyList()) {
-        value = repository.getShowcaseApps()
     }
     Scaffold(
         topBar = {
