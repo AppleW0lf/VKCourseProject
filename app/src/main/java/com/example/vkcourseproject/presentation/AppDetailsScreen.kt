@@ -50,7 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDetailsScreen(
-    appId: Int,
+    appId: String,
     onBackClick: () -> Unit,
     onShowcaseAppClick: (AppItem) -> Unit,
     modifier: Modifier = Modifier,

@@ -22,11 +22,14 @@ class AppDetailsViewModel @Inject constructor(
     private val _showcaseApps = MutableStateFlow<List<AppItem>>(emptyList())
     val showcaseApps: StateFlow<List<AppItem>> = _showcaseApps.asStateFlow()
 
-    fun loadData(appId: Int) {
+    fun loadData(appId: String) {
         viewModelScope.launch {
-            val allApps = repository.getApps()
-            _app.value = allApps.find { it.id == appId } ?: allApps.firstOrNull()
-            _showcaseApps.value = repository.getShowcaseApps()
+            try {
+                val allApps = repository.getApps()
+                _app.value = allApps.find { it.id == appId } ?: allApps.firstOrNull()
+                _showcaseApps.value = repository.getShowcaseApps()
+            } catch (e: Exception) {
+            }
         }
     }
 }

@@ -30,12 +30,16 @@ class AppListViewModel @Inject constructor(private val repository: AppRepository
     private fun loadApps() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            val apps = repository.getApps()
-
-            _uiState.value = _uiState.value.copy(
-                apps = apps,
-                isLoading = false
-            )
+            try {
+                val apps = repository.getApps()
+                _uiState.value = _uiState.value.copy(
+                    apps = apps,
+                    isLoading = false
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                _events.send(AppListEvent.ShowSnackbar("Ошибка сети: ${e.message}"))
+            }
         }
     }
 
