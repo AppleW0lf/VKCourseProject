@@ -9,7 +9,8 @@ data class AppDto(
     val dev: String,
     val age: String,
     val fileSize: String,
-    val longDesc: String
+    val longDesc: String,
+    val rating: Float? = null
 )
 val mockDatabase = listOf(
     AppDto(1, "Minecraft", "Строй, исследуй и выживай", "Песочница", "⛏️", "Mojang", "6+", "800 MB", "Minecraft — это игра, в которой можно построить всё, что угодно."),

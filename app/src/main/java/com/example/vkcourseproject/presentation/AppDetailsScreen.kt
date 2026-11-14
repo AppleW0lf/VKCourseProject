@@ -56,21 +56,51 @@ fun AppDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel()
 ) {
-    val app by viewModel.app.collectAsStateWithLifecycle()
-    val showcaseApps by viewModel.showcaseApps.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(appId) {
         viewModel.loadData(appId)
     }
-    if (app == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+
+    when (val currentState = state) {
+        is AppDetailsState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
-        return
+        is AppDetailsState.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Ошибка: ${currentState.message}", color = MaterialTheme.colorScheme.error)
+            }
+        }
+        is AppDetailsState.Content -> {
+            AppDetailsContent(
+                state = currentState,
+                onBackClick = onBackClick,
+                onShowcaseAppClick = onShowcaseAppClick,
+                onInstallClick = { viewModel.onInstallClick() },
+                modifier = modifier
+            )
+        }
     }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AppDetailsContent(
+    state: AppDetailsState.Content,
+    onBackClick: () -> Unit,
+    onShowcaseAppClick: (AppItem) -> Unit,
+    onInstallClick: () -> Unit,
+    modifier: Modifier
+) {
+    val app = state.app
+    val showcaseApps = state.showcaseApps
+    val installState = state.installState
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(app!!.name) },
+                title = { Text(app.name) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
@@ -99,20 +129,20 @@ fun AppDetailsScreen(
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = app!!.icon, fontSize = 40.sp)
+                    Text(text = app.icon, fontSize = 40.sp)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
-                    Text(app!!.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    Text(app!!.developer, style = MaterialTheme.typography.bodyMedium)
+                    Text(app.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Text(app.developer, style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(app!!.ageRestriction, fontWeight = FontWeight.Bold)
+                            Text(app.ageRestriction, fontWeight = FontWeight.Bold)
                             Text(stringResource(R.string.app_detail_age), style = MaterialTheme.typography.labelSmall)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(app!!.size, fontWeight = FontWeight.Bold)
+                            Text(app.size, fontWeight = FontWeight.Bold)
                             Text(stringResource(R.string.app_detail_size), style = MaterialTheme.typography.labelSmall)
                         }
                     }
@@ -120,13 +150,17 @@ fun AppDetailsScreen(
             }
 
             Button(
-                onClick = {  },
+                onClick = onInstallClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(R.string.app_detail_install))
+                when (installState) {
+                    is InstallState.NotInstalled -> Text(stringResource(R.string.app_detail_install))
+                    is InstallState.Installing -> Text("Отменить (${installState.progress}%)")
+                    is InstallState.Installed -> Text("Установлено")
+                }
             }
 
 
@@ -163,13 +197,13 @@ fun AppDetailsScreen(
 
 
             Text(stringResource(R.string.app_detail_description), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
-            Text(app!!.fullDescription, modifier = Modifier.padding(horizontal = 16.dp))
+            Text(app.fullDescription, modifier = Modifier.padding(horizontal = 16.dp))
 
             HorizontalDivider(modifier = Modifier.padding(16.dp))
 
 
             ShowcaseSection(
-                apps = showcaseApps.filter { it.id != app!!.id },
+                apps = showcaseApps.filter { it.id != app.id },
                 onAppClick = onShowcaseAppClick
             )
 

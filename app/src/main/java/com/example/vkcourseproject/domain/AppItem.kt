@@ -9,7 +9,8 @@ data class AppItem(
     val developer: String = "Неизвестный разработчик",
     val ageRestriction: String = "0+",
     val size: String = "100 MB",
-    val fullDescription: String = "Подробное описание отсутствует."
+    val fullDescription: String = "Подробное описание отсутствует.",
+    val rating: Float? = null
 )
 
 val sampleApps = listOf(

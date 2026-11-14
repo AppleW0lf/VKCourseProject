@@ -7,10 +7,12 @@ import com.example.vkcourseproject.domain.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +27,9 @@ class AppListViewModel @Inject constructor(private val repository: AppRepository
 
     init {
         loadApps()
+
+        //loadRatingsSequentially()
+        loadRatingsInParallel()
     }
 
     private fun loadApps() {
@@ -46,6 +51,33 @@ class AppListViewModel @Inject constructor(private val repository: AppRepository
     fun onToolbarClicked() {
         viewModelScope.launch {
             _events.send(AppListEvent.ShowSnackbar("Нажата кнопка меню!"))
+        }
+    }
+    fun loadRatingsSequentially() {
+        viewModelScope.launch {
+            delay(3500)
+            val ids = (_uiState.value.apps).map { it.id }
+            val ratings = repository.loadRatingsSequentially(ids)
+            updateRatings(ratings)
+        }
+    }
+
+    fun loadRatingsInParallel() {
+        viewModelScope.launch {
+            delay(3500)
+            val ids = (_uiState.value.apps).map { it.id }
+            val ratings = repository.loadRatingsInParallel(ids)
+            updateRatings(ratings)
+        }
+    }
+
+    private fun updateRatings(ratings: Map<String, Float>) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                apps = currentState.apps.map { app ->
+                    app.copy(rating = ratings[app.id])
+                }
+            )
         }
     }
 }

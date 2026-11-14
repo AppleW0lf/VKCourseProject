@@ -11,7 +11,8 @@ data class CatalogResponseDto(
     @SerializedName("developer") val developer: String?,
     @SerializedName("age_restriction") val ageRestriction: String?,
     @SerializedName("size") val size: String?,
-    @SerializedName("full_description") val fullDescription: String?
+    @SerializedName("full_description") val fullDescription: String?,
+    @SerializedName("rating") val rating: Float?
 )
 
 data class AppDetailsResponseDto(
@@ -23,5 +24,6 @@ data class AppDetailsResponseDto(
     @SerializedName("developer") val developer: String?,
     @SerializedName("age_restriction") val ageRestriction: String?,
     @SerializedName("size") val size: String?,
-    @SerializedName("full_description") val fullDescription: String?
+    @SerializedName("full_description") val fullDescription: String?,
+    @SerializedName("rating") val rating: Float?
 )

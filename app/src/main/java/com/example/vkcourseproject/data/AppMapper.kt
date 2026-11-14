@@ -14,7 +14,8 @@ fun CatalogResponseDto.toDomain(): AppItem {
         developer = this.developer ?: "Неизвестен",
         ageRestriction = this.ageRestriction ?: "0+",
         size = this.size ?: "Неизвестно",
-        fullDescription = this.fullDescription ?: ""
+        fullDescription = this.fullDescription ?: "",
+        rating = this.rating
     )
 }
 fun AppDetailsResponseDto.toDomain(): AppItem {
@@ -27,6 +28,7 @@ fun AppDetailsResponseDto.toDomain(): AppItem {
         developer = this.developer ?: "Неизвестен",
         ageRestriction = this.ageRestriction ?: "0+",
         size = this.size ?: "Неизвестно",
-        fullDescription = this.fullDescription ?: ""
+        fullDescription = this.fullDescription ?: "",
+        rating = this.rating
     )
 }

@@ -2,6 +2,7 @@ package com.example.vkcourseproject.data.network
 
 import com.example.vkcourseproject.data.network.dto.AppDetailsResponseDto
 import com.example.vkcourseproject.data.network.dto.CatalogResponseDto
+import kotlinx.coroutines.delay
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -11,4 +12,9 @@ interface AppApi {
 
     @GET("{id}")
     suspend fun getAppDetails(@Path("id") id: Int): AppDetailsResponseDto
+
+    suspend fun getRating(id: String): Float {
+        delay(3500)
+        return (30..50).random() / 10f
+    }
 }
